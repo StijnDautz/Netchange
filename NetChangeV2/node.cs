@@ -18,13 +18,16 @@ namespace NetChangeV2 {
 
         /// <summary> Handles a change alert and sends the message to its neighbours if something changed in its routingtable </summary>
         internal void ReceiveChangeAlert(int np, Route r) {
-            lock (this) {
+            lock (routingtable)
+            {
                 neighbours[np].routingtable.GetAndTryChange(r);
 
                 // check if the updated routingtable affects the own routingtable
-                if (r.port != port && r.preferred != port.ToString()) {
+                if (r.port != port && r.preferred != port.ToString())
+                {
                     var route = GetFastestRoute(r.port);
-                    if (routingtable.GetAndTryChange(route)) {
+                    if (routingtable.GetAndTryChange(route))
+                    {
                         AlertChange(route);
                     }
                 }
@@ -77,7 +80,6 @@ namespace NetChangeV2 {
         public void Connect(int p) {
             var connection = new Connection(p);
             AddNeighbourConnection(p, connection);
-            //neighbours[p].SendRoutingTable(routingtable);
         }
 
         public void Disconnect(int np) {
@@ -93,13 +95,17 @@ namespace NetChangeV2 {
             lock (neighbours) neighbours.Add(neighbour, connection);
 
             var newroute = new Route(neighbour, 1, neighbour.ToString());
-            if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
-            else routingtable[newroute.port] = newroute;
+
+            lock (routingtable)
+            {
+                if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
+                else routingtable[newroute.port] = newroute;
+                lock (connection) connection.SendRoutingTable(routingtable);
+            }
+            AlertChange(newroute);
 
             connection.StartPolling();
 
-            AlertChange(newroute);
-            connection.SendRoutingTable(routingtable);
 
             // Domjudge - Bij het ontstaan van een directe verbinding met het process op poort targetPort:
             Console.WriteLine("Verbonden: " + connection.neighbour);
@@ -110,14 +116,17 @@ namespace NetChangeV2 {
             lock (neighbours) neighbours.Add(neighbour, connection);
 
             connection.SendOpeningMessage(port);
-            connection.StartPolling();
 
             var newroute = new Route(neighbour, 1, neighbour.ToString());
-            if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
-            else routingtable[newroute.port] = newroute;
+            lock (routingtable)
+            {
+                if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
+                else routingtable[newroute.port] = newroute;
+                lock(connection) connection.SendRoutingTable(routingtable);
 
+            }
             AlertChange(newroute);
-            connection.SendRoutingTable(routingtable);
+            connection.StartPolling();
 
             // Domjudge - Bij het ontstaan van een directe verbinding met het process op poort targetPort:
             Console.WriteLine("Verbonden: " + connection.neighbour);
@@ -153,14 +162,25 @@ namespace NetChangeV2 {
         private Route GetFastestRoute(int tp) {
             int d; int closest = int.MaxValue; Connection pn = null;
 
-            foreach (Connection c in neighbours.Values)
-                if (c.routingtable.ContainsKey(tp)) {
-                    d = c.routingtable[tp].distance;
-                    if (closest > d) {
-                        closest = d;
-                        pn = c;
-                    }
+            lock (neighbours)
+            {
+                lock (routingtable)
+                {
+                    foreach (Connection c in neighbours.Values)
+                        lock (c)
+                        {
+                            if (c.routingtable.ContainsKey(tp))
+                            {
+                                d = c.routingtable[tp].distance;
+                                if (closest > d)
+                                {
+                                    closest = d;
+                                    pn = c;
+                                }
+                            }
+                        }
                 }
+            }
             // if closest is bigger then the total routingtable, then the port has become unreachable
             return new Route(tp, ++closest, Convert.ToString(pn.neighbour));
         }

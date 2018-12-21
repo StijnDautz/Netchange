@@ -69,9 +69,13 @@ namespace NetChangeV2 {
             }
         }
 
-        internal void SendRoutingTable(Routingtable routingtable) {
-            foreach (Route r in routingtable.Values) {
-                SendRoute(r);
+        internal void SendRoutingTable(Routingtable table) {
+            lock (table)
+            {
+                foreach (Route r in table.Values)
+                {
+                    SendRoute(r);
+                }
             }
         }
 
