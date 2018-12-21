@@ -1,0 +1,620 @@
+Onderdeel;Corrects;Attempts;Punten;Max
+std-Opstarten;0;1;0;4
+std-Connect;0;0;0;1
+std-Disconnect;0;0;0;1
+std-Berichten;0;0;0;1
+std-BerichtNaVerandering;0;0;0;0,5
+std-NetwerkPartitie;0;0;0;1
+Opstarten;1;3;3;4
+Connect;0;0;0;1
+Disconnect;0;1;0;1
+Berichten;1;1;1;1
+BerichtNaVerandering;0;0;0;0,5
+NetwerkPartitie;0;0;0;1
+BovenLimiet;0;1;0;1
+Totaal;-;-;4;(van 18)
+
+Let op: deze berekening is niet het definitieve cijfer. Dit is alleen maar een automatisch gegenereerde score voor het testbare gedeelte, en het staat nog niet vast dat we dit bij de beoordeling gebruiken.
+
+------------------------------------
+
+Testcase;Status;Tijd;Omschrijving
+Standaard;Error;4,32;Opstarten netwerk
+Random;Correct;19,07;Opstarten netwerk
+Random;Correct;10,07;Berichten sturen
+Random;Error;6,18;Verbindingen verbreken
+
+------------------------------------
+
+1;Standaard;Error;4,32;Opstarten netwerk
+Test 1 - Standaard
+
+Process 55501 gercasht met foutmelding:
+Onverwerkte uitzondering: System.InvalidOperationException: De verzameling is gewijzigd. Mogelijk wordt de inventarisatiebewerking niet uitgevoerd.
+   bij System.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource)
+   bij System.Collections.Generic.Dictionary`2.ValueCollection.Enumerator.MoveNext()
+   bij NetChangeV2.Connection.SendRoutingTable(Routingtable routingtable) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\Connection.cs:regel 73
+   bij NetChangeV2.Node.ReceiveConnectionRequest(Int32 neighbour, Connection connection) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 102
+   bij NetChangeV2.Server.PollNeighbourNotifications(TcpListener listener) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\Server.cs:regel 32
+   bij NetChangeV2.Server.<>c__DisplayClass0_0.<.ctor>b__0() in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\Server.cs:regel 13
+   bij System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   bij System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   bij System.Threading.ThreadHelper.ThreadStart()
+
+Onverwerkte uitzondering: System.NullReferenceException: De objectverwijzing is niet op een exemplaar van een object ingesteld.
+   bij NetChangeV2.Node.GetFastestRoute(Int32 tp) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 165
+   bij NetChangeV2.Node.RecomputeBrokenPorts(String np) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 143
+   bij NetChangeV2.Node.RemoveNeighbourConnection(Int32 np) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 133
+   bij NetChangeV2.Connection.PollNotifications() in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\Connection.cs:regel 67
+   bij System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   bij System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   bij System.Threading.ThreadHelper.ThreadStart()
+
+Log
+start NetChangeV2.exe 55500 55501 55502
+start NetChangeV2.exe 55501 55500 55502
+start NetChangeV2.exe 55502 55500 55501 55503 55504
+start NetChangeV2.exe 55503 55502 55505
+start NetChangeV2.exe 55504 55502 55505
+start NetChangeV2.exe 55505 55503 55504
+55500 < X 55500 55502
+55502 < X 55502 55503
+55502 < Verbonden: 55500
+55500 < Verbonden: 55502
+55501 < Verbonden: 55500
+55503 < X 55503 55505
+55500 < X 55500 55501
+55503 < Verbonden: 55502
+55502 < Verbonden: 55503
+55502 < X 55502 55504
+55503 < Verbonden: 55505
+55500 < Verbonden: 55501
+55502 < Verbonden: 55504
+55505 < Verbonden: 55503
+55504 < Verbonden: 55502
+55501 < X 55501 55502
+55502 < Verbonden: 55501
+55504 < X 55504 55505
+55505 < Verbonden: 55504
+55504 < Verbonden: 55505
+55501 < Verbroken: 55500
+55501 < hi3
+55501 < Verbroken: 55502
+
+Process 55500:
+X 55500 55502
+Verbonden: 55502
+X 55500 55501
+Verbonden: 55501
+
+Process 55501:
+Verbonden: 55500
+X 55501 55502
+Verbroken: 55500
+hi3
+Verbroken: 55502
+
+Process 55502:
+X 55502 55503
+Verbonden: 55500
+Verbonden: 55503
+X 55502 55504
+Verbonden: 55504
+Verbonden: 55501
+
+Process 55503:
+X 55503 55505
+Verbonden: 55502
+Verbonden: 55505
+
+Process 55504:
+Verbonden: 55502
+X 55504 55505
+Verbonden: 55505
+
+Process 55505:
+Verbonden: 55503
+Verbonden: 55504
+
+------------------------------------
+
+2;Random;Correct;19,07;Opstarten netwerk
+Test 2 - Random
+
+WAARSCHUWING: de afstandupdates ('Afstand naar ... is nu ... via ...') worden mogelijk niet goed weergegeven!
+Correct: opstarten geslaagd, R-tabel in orde.
+
+Log
+start NetChangeV2.exe 55500 55501 55502 55503 55506 55507
+start NetChangeV2.exe 55501 55500 55502 55504 55505 55506
+start NetChangeV2.exe 55502 55500 55501 55504
+start NetChangeV2.exe 55503 55500 55504 55505 55506 55508
+start NetChangeV2.exe 55504 55501 55502 55503 55506
+start NetChangeV2.exe 55505 55501 55503 55506
+start NetChangeV2.exe 55506 55500 55501 55503 55504 55505 55507
+start NetChangeV2.exe 55507 55500 55506
+start NetChangeV2.exe 55508 55503
+55500 < X 55500 55501
+55500 < Verbonden: 55501
+55501 < Verbonden: 55500
+55500 < X 55500 55502
+55500 < Verbonden: 55502
+55502 < Verbonden: 55500
+55501 < X 55501 55505
+55500 < X 55500 55503
+55500 < Verbonden: 55503
+55500 < X 55500 55507
+55501 < Verbonden: 55505
+55500 < Verbonden: 55507
+55500 < X 55500 55506
+55501 < X 55501 55504
+55505 < Verbonden: 55501
+55501 < Verbonden: 55504
+55503 < Verbonden: 55500
+55500 < Verbonden: 55506
+55507 < Verbonden: 55500
+55506 < Verbonden: 55500
+55504 < Verbonden: 55501
+55503 < X 55503 55508
+55503 < Verbonden: 55508
+55508 < Verbonden: 55503
+55501 < X 55501 55502
+55502 < Verbonden: 55501
+55501 < Verbonden: 55502
+55503 < X 55503 55505
+55505 < Verbonden: 55503
+55506 < X 55506 55507
+55502 < X 55502 55504
+55506 < Verbonden: 55507
+55501 < X 55501 55506
+55503 < Verbonden: 55505
+55504 < Verbonden: 55502
+55507 < Verbonden: 55506
+55506 < Verbonden: 55501
+55502 < Verbonden: 55504
+55501 < Verbonden: 55506
+55503 < X 55503 55504
+55504 < Verbonden: 55503
+55503 < Verbonden: 55504
+55506 < Verbonden: 55503
+55503 < X 55503 55506
+55503 < Verbonden: 55506
+55504 < X 55504 55506
+55506 < Verbonden: 55504
+55504 < Verbonden: 55506
+55505 < X 55505 55506
+55506 < Verbonden: 55505
+55505 < Verbonden: 55506
+55500 > R
+55500 < 55500 0 local
+55500 < 55501 1 55501
+55500 < 55502 1 55502
+55500 < 55503 1 55503
+55500 < 55505 2 55501
+55500 < 55507 1 55507
+55500 < 55506 1 55506
+55500 < 55504 2 55501
+55500 < 55508 2 55503
+55501 > R
+55501 < 55501 0 local
+55501 < 55500 1 55500
+55501 < 55502 1 55502
+55501 < 55505 1 55505
+55501 < 55503 2 55500
+55501 < 55507 2 55500
+55501 < 55504 1 55504
+55501 < 55506 1 55506
+55501 < 55508 3 55500
+55502 > R
+55502 < 55502 0 local
+55502 < 55500 1 55500
+55502 < 55501 1 55501
+55502 < 55503 2 55500
+55502 < 55505 2 55501
+55502 < 55507 2 55500
+55502 < 55504 1 55504
+55502 < 55506 2 55500
+55502 < 55508 3 55500
+55503 > R
+55503 < 55503 0 local
+55503 < 55500 1 55500
+55503 < 55505 1 55505
+55503 < 55501 2 55500
+55503 < 55502 2 55500
+55503 < 55507 2 55500
+55503 < 55504 1 55504
+55503 < 55506 1 55506
+55503 < 55508 1 55508
+55504 > R
+55504 < 55504 0 local
+55504 < 55501 1 55501
+55504 < 55500 2 55501
+55504 < 55502 1 55502
+55504 < 55505 2 55501
+55504 < 55503 1 55503
+55504 < 55507 2 55506
+55504 < 55506 1 55506
+55504 < 55508 2 55503
+55505 > R
+55505 < 55505 0 local
+55505 < 55501 1 55501
+55505 < 55503 1 55503
+55505 < 55500 2 55501
+55505 < 55502 2 55501
+55505 < 55507 2 55506
+55505 < 55504 2 55501
+55505 < 55506 1 55506
+55505 < 55508 2 55503
+55506 > R
+55506 < 55506 0 local
+55506 < 55500 1 55500
+55506 < 55504 1 55504
+55506 < 55501 1 55501
+55506 < 55502 2 55500
+55506 < 55503 1 55503
+55506 < 55505 1 55505
+55506 < 55507 1 55507
+55506 < 55508 2 55503
+55507 > R
+55507 < 55507 0 local
+55507 < 55500 1 55500
+55507 < 55501 2 55500
+55507 < 55502 2 55500
+55507 < 55503 2 55500
+55507 < 55505 2 55506
+55507 < 55504 2 55506
+55507 < 55506 1 55506
+55507 < 55508 3 55500
+55508 > R
+55508 < 55508 0 local
+55508 < 55503 1 55503
+55508 < 55500 2 55503
+55508 < 55505 2 55503
+55508 < 55501 3 55503
+55508 < 55502 3 55503
+55508 < 55507 3 55503
+55508 < 55504 2 55503
+55508 < 55506 2 55503
+
+Process 55500:
+X 55500 55501
+Verbonden: 55501
+X 55500 55502
+Verbonden: 55502
+X 55500 55503
+Verbonden: 55503
+X 55500 55507
+Verbonden: 55507
+X 55500 55506
+Verbonden: 55506
+> R
+55500 0 local
+55501 1 55501
+55502 1 55502
+55503 1 55503
+55505 2 55501
+55507 1 55507
+55506 1 55506
+55504 2 55501
+55508 2 55503
+
+Process 55501:
+Verbonden: 55500
+X 55501 55505
+Verbonden: 55505
+X 55501 55504
+Verbonden: 55504
+X 55501 55502
+Verbonden: 55502
+X 55501 55506
+Verbonden: 55506
+> R
+55501 0 local
+55500 1 55500
+55502 1 55502
+55505 1 55505
+55503 2 55500
+55507 2 55500
+55504 1 55504
+55506 1 55506
+55508 3 55500
+
+Process 55502:
+Verbonden: 55500
+Verbonden: 55501
+X 55502 55504
+Verbonden: 55504
+> R
+55502 0 local
+55500 1 55500
+55501 1 55501
+55503 2 55500
+55505 2 55501
+55507 2 55500
+55504 1 55504
+55506 2 55500
+55508 3 55500
+
+Process 55503:
+Verbonden: 55500
+X 55503 55508
+Verbonden: 55508
+X 55503 55505
+Verbonden: 55505
+X 55503 55504
+Verbonden: 55504
+X 55503 55506
+Verbonden: 55506
+> R
+55503 0 local
+55500 1 55500
+55505 1 55505
+55501 2 55500
+55502 2 55500
+55507 2 55500
+55504 1 55504
+55506 1 55506
+55508 1 55508
+
+Process 55504:
+Verbonden: 55501
+Verbonden: 55502
+Verbonden: 55503
+X 55504 55506
+Verbonden: 55506
+> R
+55504 0 local
+55501 1 55501
+55500 2 55501
+55502 1 55502
+55505 2 55501
+55503 1 55503
+55507 2 55506
+55506 1 55506
+55508 2 55503
+
+Process 55505:
+Verbonden: 55501
+Verbonden: 55503
+X 55505 55506
+Verbonden: 55506
+> R
+55505 0 local
+55501 1 55501
+55503 1 55503
+55500 2 55501
+55502 2 55501
+55507 2 55506
+55504 2 55501
+55506 1 55506
+55508 2 55503
+
+Process 55506:
+Verbonden: 55500
+X 55506 55507
+Verbonden: 55507
+Verbonden: 55501
+Verbonden: 55503
+Verbonden: 55504
+Verbonden: 55505
+> R
+55506 0 local
+55500 1 55500
+55504 1 55504
+55501 1 55501
+55502 2 55500
+55503 1 55503
+55505 1 55505
+55507 1 55507
+55508 2 55503
+
+Process 55507:
+Verbonden: 55500
+Verbonden: 55506
+> R
+55507 0 local
+55500 1 55500
+55501 2 55500
+55502 2 55500
+55503 2 55500
+55505 2 55506
+55504 2 55506
+55506 1 55506
+55508 3 55500
+
+Process 55508:
+Verbonden: 55503
+> R
+55508 0 local
+55503 1 55503
+55500 2 55503
+55505 2 55503
+55501 3 55503
+55502 3 55503
+55507 3 55503
+55504 2 55503
+55506 2 55503
+
+------------------------------------
+
+2;Random;Correct;10,07;Berichten sturen
+Test 2 - Random
+
+Correct: Berichtcheck - van 55507 naar 55500
+Correct: Berichtcheck - van 55502 naar 55508
+Correct: Berichtcheck - van 55506 naar 55503
+Correct: Berichtcheck - van 55503 naar 55506
+Correct: Berichtcheck - van 55506 naar 55504
+Correct: Berichtcheck - van 55502 naar 55503
+Correct: Berichtcheck - van 55504 naar 55501
+Correct: Berichtcheck - van 55503 naar 55506
+Correct: Berichtcheck - van 55503 naar 55501
+Correct: Berichtcheck - van 55508 naar 55500
+
+Log
+55507 > B 55500 HOI0
+55507 < Bericht voor 55500 doorgestuurd naar 55500
+55500 < HOI0
+55502 > B 55508 HOI1
+55502 < Bericht voor 55508 doorgestuurd naar 55500
+55500 < Bericht voor 55508 doorgestuurd naar 55503
+55503 < Bericht voor 55508 doorgestuurd naar 55508
+55508 < HOI1
+55506 > B 55503 HOI2
+55506 < Bericht voor 55503 doorgestuurd naar 55503
+55503 < HOI2
+55503 > B 55506 HOI3
+55503 < Bericht voor 55506 doorgestuurd naar 55506
+55506 < HOI3
+55506 > B 55504 HOI4
+55506 < Bericht voor 55504 doorgestuurd naar 55504
+55504 < HOI4
+55502 > B 55503 HOI5
+55502 < Bericht voor 55503 doorgestuurd naar 55500
+55500 < Bericht voor 55503 doorgestuurd naar 55503
+55503 < HOI5
+55504 > B 55501 HOI6
+55504 < Bericht voor 55501 doorgestuurd naar 55501
+55501 < HOI6
+55503 > B 55506 HOI7
+55506 < HOI7
+55503 < Bericht voor 55506 doorgestuurd naar 55506
+55503 > B 55501 HOI8
+55503 < Bericht voor 55501 doorgestuurd naar 55500
+55500 < Bericht voor 55501 doorgestuurd naar 55501
+55501 < HOI8
+55508 > B 55500 HOI9
+55508 < Bericht voor 55500 doorgestuurd naar 55503
+55503 < Bericht voor 55500 doorgestuurd naar 55500
+55500 < HOI9
+
+Process 55500:
+HOI0
+Bericht voor 55508 doorgestuurd naar 55503
+Bericht voor 55503 doorgestuurd naar 55503
+Bericht voor 55501 doorgestuurd naar 55501
+HOI9
+
+Process 55501:
+HOI6
+HOI8
+
+Process 55502:
+> B 55508 HOI1
+Bericht voor 55508 doorgestuurd naar 55500
+> B 55503 HOI5
+Bericht voor 55503 doorgestuurd naar 55500
+
+Process 55503:
+Bericht voor 55508 doorgestuurd naar 55508
+HOI2
+> B 55506 HOI3
+Bericht voor 55506 doorgestuurd naar 55506
+HOI5
+> B 55506 HOI7
+Bericht voor 55506 doorgestuurd naar 55506
+> B 55501 HOI8
+Bericht voor 55501 doorgestuurd naar 55500
+Bericht voor 55500 doorgestuurd naar 55500
+
+Process 55504:
+HOI4
+> B 55501 HOI6
+Bericht voor 55501 doorgestuurd naar 55501
+
+Process 55506:
+> B 55503 HOI2
+Bericht voor 55503 doorgestuurd naar 55503
+HOI3
+> B 55504 HOI4
+Bericht voor 55504 doorgestuurd naar 55504
+HOI7
+
+Process 55507:
+> B 55500 HOI0
+Bericht voor 55500 doorgestuurd naar 55500
+
+Process 55508:
+HOI1
+> B 55500 HOI9
+Bericht voor 55500 doorgestuurd naar 55503
+
+------------------------------------
+
+2;Random;Error;6,18;Verbindingen verbreken
+Test 2 - Random
+
+Process 55508 gercasht met foutmelding:
+Onverwerkte uitzondering: System.NullReferenceException: De objectverwijzing is niet op een exemplaar van een object ingesteld.
+   bij NetChangeV2.Node.GetFastestRoute(Int32 tp) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 165
+   bij NetChangeV2.Node.RecomputeBrokenPorts(String np) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 143
+   bij NetChangeV2.Node.RemoveNeighbourConnection(Int32 np) in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\node.cs:regel 133
+   bij NetChangeV2.Connection.PollNotifications() in C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\Connection.cs:regel 67
+   bij System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   bij System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   bij System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   bij System.Threading.ThreadHelper.ThreadStart()
+
+Verbinding van 0 naar 2 verbroken.
+Verbinding van 4 naar 2 verbroken.
+Verbinding van 0 naar 1 verbroken.
+Verbinding van 3 naar 8 verbroken.
+
+Log
+55500 > D 55502
+55502 < Verbroken: 55500
+55500 < Verbroken: 55502
+55500 < hi3
+55502 < hi3
+55504 > D 55502
+55502 < Verbroken: 55504
+55502 < hi3
+55504 < Verbroken: 55502
+55504 < hi3
+55500 > D 55501
+55500 < Verbroken: 55501
+55500 < hi3
+55501 < Verbroken: 55500
+55501 < hi3
+55503 > D 55508
+55508 < Verbroken: 55503
+55503 < Verbroken: 55508
+
+Process 55500:
+> D 55502
+Verbroken: 55502
+hi3
+> D 55501
+Verbroken: 55501
+hi3
+
+Process 55501:
+Verbroken: 55500
+hi3
+
+Process 55502:
+Verbroken: 55500
+hi3
+Verbroken: 55504
+hi3
+
+Process 55503:
+> D 55508
+Verbroken: 55508
+
+Process 55504:
+> D 55502
+Verbroken: 55502
+hi3
+
+Process 55508:
+Verbroken: 55503
+
+Microsoft Windows NT 6.2.9200.0 (x64)
+.NET version: 4.0.30319.42000
+4 physical core(s), 8 virtual core(s) (hyperthreading), 1 processor(s)

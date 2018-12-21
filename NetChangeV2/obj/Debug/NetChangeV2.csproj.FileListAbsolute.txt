@@ -1,0 +1,27 @@
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe.config
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.pdb
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csprojResolveAssemblyReference.cache
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csproj.CoreCompileInputs.cache
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.exe
+c:\users\dautz\source\repos\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.pdb
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe.config
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.exe
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.pdb
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.pdb
+C:\Users\Frank\Documents\Visual Studio 2015\Projects\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csprojResolveAssemblyReference.cache
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe.config
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.pdb
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csprojResolveAssemblyReference.cache
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csproj.CoreCompileInputs.cache
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.exe
+C:\Users\dautz\Downloads\NetChangeV4\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.pdb
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.exe
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.pdb
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csprojAssemblyReference.cache
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csproj.CoreCompileInputs.cache
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe.config
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe
+C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.pdb
