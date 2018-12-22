@@ -11,9 +11,8 @@ namespace NetChangeV2
         public string preferred;
         public string MessageForm { get { return port + " " + distance + " " + preferred; } }
 
-        public bool CanBe(int count) {
-            return distance > count || preferred == string.Empty;
-        }
+        public bool CanBe(int count) => distance > count || preferred == string.Empty;
+        internal void Print() => Console.WriteLine(MessageForm);
 
         public static bool operator ==(Route r1, Route r2)
         {
@@ -34,55 +33,12 @@ namespace NetChangeV2
             this.distance = distance;
             this.preferred = preferred;
         }
-
-        internal void Update(int newDistance, string newPreferred)
-        {
-            distance = newDistance;
-            preferred = newPreferred;
-        }
-
-        internal Route CompareAndChange(int newDistance, string newPreferred)
-        {
-            // if the info changes, return changed info else null
-            var info = distance != newDistance || preferred != newPreferred ? this : null;
-
-            distance = newDistance;
-            preferred = newPreferred;
-
-            return info;
-        }
     }
 
     class Routingtable : Dictionary<int, Route>
     {
-        public void Add(int targetPort, int distance, string preferred)
-        {
-            lock (this)
-            {
-                Add(targetPort, new Route(targetPort, distance, preferred));
-            }
-        }
-
-        public void Add(Route info)
-        {
-            lock (this)
-            {
-                Add(info.port, info);
-            }
-        }
-
-        public Route CompareAndChange(int port, int distance, Connection neighbour)
-        {
-            lock (this)
-            {                
-                if (!ContainsKey(port))
-                {
-                    Add(port, distance, neighbour.neighbour.ToString());
-                    return this[port];
-                }
-                else
-                    return this[port].CompareAndChange(distance, neighbour.neighbour.ToString());
-            }
+        public void Add(Route info) {
+            lock (this) Add(info.port, info);
         }
 
         /// <summary>
@@ -110,18 +66,11 @@ namespace NetChangeV2
             }
         }
 
-        internal bool GetAndTryChange(Route route) {
-            var p = route.port;
-            //if (route.CanBe(Count)) {
-            //    HandleUnreachablePort(p);
-            //}
-            if (!ContainsKey(p)) {
-                Add(route);
-            } else if (this[p] != route) {
-                this[p] = route;
-            } else {
-                return false;
-            }
+        internal bool TryAlter(Route r) {
+            var p = r.port;
+            if (!ContainsKey(p)) Add(r);
+            else if (this[p] != r) this[p] = r;
+            else return false;
             return true;
         }
     }

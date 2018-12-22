@@ -25,3 +25,10 @@ C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\obj\Debug\NetChangeV2.csproj.Co
 C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe.config
 C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.exe
 C:\Users\dautz\Documents\NetChangeV2\NetChangeV2\bin\Debug\NetChangeV2.pdb
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\bin\Debug\NetChangeV2.exe.config
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\bin\Debug\NetChangeV2.exe
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\bin\Debug\NetChangeV2.pdb
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\obj\Debug\NetChangeV2.csprojAssemblyReference.cache
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\obj\Debug\NetChangeV2.csproj.CoreCompileInputs.cache
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\obj\Debug\NetChangeV2.exe
+C:\Users\dautz\Documents\School\Concurrency\Netchange\Netchange\NetChangeV2\obj\Debug\NetChangeV2.pdb

@@ -13,38 +13,27 @@ namespace NetChangeV2 {
             port = p;
             neighbours = new Dictionary<int, Connection>();
             routingtable = new Routingtable();
-            lock (routingtable) routingtable.Add(port, 0, "local");
+            lock (routingtable) routingtable.Add(new Route(port, 0, "local"));
         }
 
         /// <summary> Handles a change alert and sends the message to its neighbours if something changed in its routingtable </summary>
         internal void ReceiveChangeAlert(int np, Route r) {
-            lock (routingtable)
-            {
-                neighbours[np].routingtable.GetAndTryChange(r);
+                neighbours[np].routingtable.TryAlter(r);
 
                 // check if the updated routingtable affects the own routingtable
-                if (r.port != port && r.preferred != port.ToString())
-                {
+                if (r.port != port && r.preferred != port.ToString()) {
                     var route = GetFastestRoute(r.port);
-                    if (routingtable.GetAndTryChange(route))
-                    {
-                        AlertChange(route);
-                    }
+                    if (routingtable.TryAlter(route)) AlertChange(route);
                 }
-            }
         }
 
         private void AlertChange(Route r) {
-            foreach (Connection c in neighbours.Values)
-                c.SendRoute(r);
+            lock (neighbours) foreach (Connection c in neighbours.Values) c.SendRoute(r);
         }
 
         /* ---------------------------------------------- ACTIONS AFTER WRITE ----------------------------------------------*/
         public void PrintRoutingTable() {
-            lock (routingtable) {
-                foreach (Route info in routingtable.Values)
-                    Console.WriteLine(info.port + " " + info.distance + " " + info.preferred);
-            }
+            lock (routingtable) foreach (Route r in routingtable.Values) r.Print();
         }
 
         public void SendMessage(string input) {
@@ -63,23 +52,19 @@ namespace NetChangeV2 {
         }
 
         internal void ReceiveDisconnectMessage(Route r) {
-            if(r.port == port) {
-                routingtable[port] = r;
-                AlertChange(r);
-            } else if (r.CanBe(routingtable.Count)) {
-                r.distance++;
-                foreach (Connection c in neighbours.Values)
-                    c.SendRoute(r);
-            } else {
+            if (r.port == port) routingtable[port] = r;             //
+            else if (r.CanBe(routingtable.Count)) r.distance++;
+            else {
                 routingtable.Remove(port);
                 r.preferred = "";
-                AlertChange(r);
             }
+            AlertChange(r);
         }
 
         public void Connect(int p) {
             var connection = new Connection(p);
-            AddNeighbourConnection(p, connection);
+            connection.SendOpeningMessage(port);
+            AddNeighbour(p, connection);
         }
 
         public void Disconnect(int np) {
@@ -90,49 +75,21 @@ namespace NetChangeV2 {
         }
 
         /* ---------------------------------------------- ACTIONS AFTER READ ----------------------------------------------*/
-        public void ReceiveConnectionRequest(int neighbour, Connection connection)
-        {
+        public void AddNeighbour(int neighbour, Connection connection) {
+            //lock, as we do not want to alter it when its being used
             lock (neighbours) neighbours.Add(neighbour, connection);
 
             var newroute = new Route(neighbour, 1, neighbour.ToString());
-
-            lock (routingtable)
-            {
-                if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
-                else routingtable[newroute.port] = newroute;
-                lock (connection) connection.SendRoutingTable(routingtable);
-            }
+            routingtable.TryAlter(newroute);
             AlertChange(newroute);
 
-            connection.StartPolling();
-
-
-            // Domjudge - Bij het ontstaan van een directe verbinding met het process op poort targetPort:
-            Console.WriteLine("Verbonden: " + connection.neighbour);
-        }
-
-
-        public void AddNeighbourConnection(int neighbour, Connection connection) {
-            lock (neighbours) neighbours.Add(neighbour, connection);
-
-            connection.SendOpeningMessage(port);
-
-            var newroute = new Route(neighbour, 1, neighbour.ToString());
-            lock (routingtable)
-            {
-                if (!routingtable.ContainsKey(newroute.port)) routingtable.Add(newroute);
-                else routingtable[newroute.port] = newroute;
-                lock(connection) connection.SendRoutingTable(routingtable);
-
-            }
-            AlertChange(newroute);
+            connection.SendRoutingTable(routingtable);
             connection.StartPolling();
 
             // Domjudge - Bij het ontstaan van een directe verbinding met het process op poort targetPort:
             Console.WriteLine("Verbonden: " + connection.neighbour);
         }
 
-        // TODO dont switch from int to string and vice versa
         /// <summary>Removes the neighbour from the neighbour collection and the routingtable</summary>
         public void RemoveNeighbourConnection(int np) {
             // Domjudge - Bij het verbreken van een directe verbinding met het process op poort neighbourPort:
@@ -142,7 +99,6 @@ namespace NetChangeV2 {
             RecomputeBrokenPorts(np.ToString());
         }
 
-        // TODO what is faster? int.parse everytime or a string, maybe store an int and string?
         /// <summary>Recomputes the fastest route to ports, which route was broken after the preferred neighbour disconnected</summary>
         private void RecomputeBrokenPorts(string np) {
             lock (routingtable) {
@@ -164,21 +120,14 @@ namespace NetChangeV2 {
 
             lock (neighbours)
             {
-                lock (routingtable)
-                {
-                    foreach (Connection c in neighbours.Values)
-                        lock (c)
-                        {
-                            if (c.routingtable.ContainsKey(tp))
-                            {
-                                d = c.routingtable[tp].distance;
-                                if (closest > d)
-                                {
-                                    closest = d;
-                                    pn = c;
-                                }
-                            }
+                foreach (Connection c in neighbours.Values) {
+                    if (c.routingtable.ContainsKey(tp)) {
+                        d = c.routingtable[tp].distance;
+                        if (closest > d) {
+                            closest = d;
+                            pn = c;
                         }
+                    }
                 }
             }
             // if closest is bigger then the total routingtable, then the port has become unreachable

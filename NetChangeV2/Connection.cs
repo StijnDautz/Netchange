@@ -32,11 +32,7 @@ namespace NetChangeV2 {
             _streamReader = new StreamReader(stream);
             _streamWriter = new StreamWriter(stream);
             _streamWriter.AutoFlush = true;
-        }
-
-        public void StartPolling() {
-            new Thread(new ThreadStart(PollNotifications)).Start();
-        }
+        }       
 
         public void PollNotifications() {
             string line;
@@ -56,7 +52,7 @@ namespace NetChangeV2 {
                             break;
                         // Disconnect           - D targetPort
                         case 'D':
-                            //Program.node.ReceiveDisconnectMessage();
+                            Program.node.ReceiveDisconnectMessage(new Route(int.Parse(message[2]), int.Parse(message[3]), message[4]));
                             break;
                         default:
                             Console.WriteLine("Unknown command");
@@ -65,20 +61,13 @@ namespace NetChangeV2 {
                 }
             } catch {
                 Program.node.RemoveNeighbourConnection(neighbour);
-                Console.WriteLine("hi3");
             }
         }
 
         internal void SendRoutingTable(Routingtable table) {
-            lock (table)
-            {
-                foreach (Route r in table.Values)
-                {
-                    SendRoute(r);
-                }
-            }
+            lock (table) foreach (Route r in table.Values) SendRoute(r);
         }
-
+        public void StartPolling() => new Thread(new ThreadStart(PollNotifications)).Start();
         public void CloseConnection() =>  _tcpClient.Close();
         private void Write(string message) => _streamWriter.WriteLine(message);
         public void SendMessage(string message) => Write(message);

@@ -11,10 +11,7 @@ namespace NetChangeV2
             try {
                 TcpListener listener = new TcpListener(IPAddress.Any, poortnummer);
                 new Thread(() => PollNeighbourNotifications(listener)).Start();
-            }
-            catch (Exception e) {
-                throw new Exception(e.ToString());
-            }
+            } catch (Exception e) { throw new Exception(e.ToString()); }
         }
         
         private void PollNeighbourNotifications(TcpListener listener) {
@@ -26,10 +23,9 @@ namespace NetChangeV2
                 clientOut.AutoFlush = true;
 
                 var message = clientIn.ReadLine();
-                Console.WriteLine(message);
                 if (message.Split()[0] == "X") { //an unknown neighbour tries to connect
                     int neighbour = int.Parse(message.Split()[2]);
-                    Program.node.ReceiveConnectionRequest(neighbour, new Connection(neighbour, client, clientIn, clientOut));
+                    Program.node.AddNeighbour(neighbour, new Connection(neighbour, client, clientIn, clientOut));
                 }
             }
         }
