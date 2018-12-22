@@ -18,13 +18,19 @@ namespace NetChangeV2 {
 
         /// <summary> Handles a change alert and sends the message to its neighbours if something changed in its routingtable </summary>
         internal void ReceiveChangeAlert(int np, Route r) {
-                neighbours[np].routingtable.TryAlter(r);
+            var neighbourtable = neighbours[np].routingtable;
 
-                // check if the updated routingtable affects the own routingtable
-                if (r.port != port && r.preferred != port.ToString()) {
-                    var route = GetFastestRoute(r.port);
-                    if (routingtable.TryAlter(route)) AlertChange(route);
-                }
+            if (r.Removed || (!r.Removed && r.distance > routingtable.Count-1)) {
+                Console.WriteLine("note to remove " + r.port + " from " + np);
+                neighbourtable.RemovePort(r.port);
+                if (!routingtable.ContainsKey(r.port)) return; // we already know
+            } else neighbourtable.TryAlter(r);
+
+            // check if the updated routingtable affects the own routingtable
+            if (r.port != port) {
+                var route = GetFastestRoute(r.port);
+                if (routingtable.TryAlter(route)) AlertChange(route);
+            }
         }
 
         private void AlertChange(Route r) {
@@ -40,25 +46,31 @@ namespace NetChangeV2 {
             var message = input.Split(new char[] { ' ' }, 3);
             int tp = int.Parse(message[1]);
 
-            lock (routingtable) {
-                if (tp != port) {
-                    var next = int.Parse(routingtable[tp].preferred);
-                    neighbours[next].SendMessage(input);
-                    // Domjudge - Als een bericht wordt doorgestuurd:
-                    Console.WriteLine("Bericht voor " + tp + " doorgestuurd naar " + next);
-                }
-                else Console.WriteLine(message[2]);
+            if (tp != port) {
+                var next = int.Parse(routingtable[tp].preferred);
+                neighbours[next].SendMessage(input);
+                // Domjudge - Als een bericht wordt doorgestuurd:
+                Console.WriteLine("Bericht voor " + tp + " doorgestuurd naar " + next);
             }
+            else Console.WriteLine(message[2]);
         }
 
-        internal void ReceiveDisconnectMessage(Route r) {
-            if (r.port == port) routingtable[port] = r;             //
-            else if (r.CanBe(routingtable.Count)) r.distance++;
-            else {
-                routingtable.Remove(port);
-                r.preferred = "";
-            }
-            AlertChange(r);
+        internal void ReceiveDisconnectMessage(int port) {
+            //now that the message has arrived, we can safely close the connection
+            neighbours[port].CloseConnection();
+
+            var route = neighbours[port].routingtable[port];
+            route.preferred = "D";
+
+            //notify existing neighbours about route change
+            lock(neighbours) neighbours.Remove(port);
+            RecomputeBrokenPorts(port.ToString());
+
+            route = GetFastestRoute(port);
+            if (route.Removed || (!route.Removed && route.distance > routingtable.Count)) {
+                routingtable.RemovePort(port);
+            } else routingtable[port] = route;
+            AlertChange(route);
         }
 
         public void Connect(int p) {
@@ -70,7 +82,6 @@ namespace NetChangeV2 {
         public void Disconnect(int np) {
             var c = neighbours[np];
             c.SendDisconnectMessage(port);
-            c.CloseConnection();
             RemoveNeighbourConnection(np);
         }
 
@@ -95,20 +106,23 @@ namespace NetChangeV2 {
             // Domjudge - Bij het verbreken van een directe verbinding met het process op poort neighbourPort:
             Console.WriteLine("Verbroken: " + np);
 
-            neighbours.Remove(np);
+            lock(neighbours) neighbours.Remove(np);
             RecomputeBrokenPorts(np.ToString());
         }
 
         /// <summary>Recomputes the fastest route to ports, which route was broken after the preferred neighbour disconnected</summary>
         private void RecomputeBrokenPorts(string np) {
+            Console.WriteLine("Recomputing broken ports");
             lock (routingtable) {
+                //alert alternative routes
                 foreach (Route i in routingtable.Values.Reverse()) {
                     if (i.preferred == np) {
                         // we are sure that every route to i.port that preferred np, is either unreachable or changed
                         var route = GetFastestRoute(i.port);
-                        //if(route.CanBe)
-                        routingtable.removeOrAlter(route);
-                        AlertChange(route);
+                        if (routingtable.removeOrAlter(route, routingtable.Count)) {
+                            routingtable.RemovePort(i.port);
+                            AlertChange(new Route(i.port, 1000, "D"));
+                        } else AlertChange(route);
                     }
                 }
             }
@@ -118,12 +132,12 @@ namespace NetChangeV2 {
         private Route GetFastestRoute(int tp) {
             int d; int closest = int.MaxValue; Connection pn = null;
 
-            lock (neighbours)
-            {
+            lock (neighbours) {
                 foreach (Connection c in neighbours.Values) {
-                    if (c.routingtable.ContainsKey(tp)) {
+                    if (tp == c.neighbour) return new Route(tp, 1, tp.ToString());
+                    else if (c.routingtable.ContainsKey(tp)) {
                         d = c.routingtable[tp].distance;
-                        if (closest > d) {
+                        if (closest > d && int.Parse(c.routingtable[tp].preferred) != port) { //cannot target a port through ourselves
                             closest = d;
                             pn = c;
                         }
@@ -131,7 +145,7 @@ namespace NetChangeV2 {
                 }
             }
             // if closest is bigger then the total routingtable, then the port has become unreachable
-            return new Route(tp, ++closest, Convert.ToString(pn.neighbour));
+            return pn == null ? new Route(tp, 1000, "D") : new Route(tp, ++closest, Convert.ToString(pn.neighbour));
         }
     }
 }

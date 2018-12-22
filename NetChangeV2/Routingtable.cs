@@ -10,25 +10,22 @@ namespace NetChangeV2
         // the preferred node is a neighbour
         public string preferred;
         public string MessageForm { get { return port + " " + distance + " " + preferred; } }
-
+        public bool Removed { get { return preferred == "D"; } }
         public bool CanBe(int count) => distance > count || preferred == string.Empty;
         internal void Print() => Console.WriteLine(MessageForm);
 
-        public static bool operator ==(Route r1, Route r2)
-        {
+        public static bool operator ==(Route r1, Route r2) {
             return r1.port == r2.port && 
                 r1.distance == r2.distance && 
                 r1.preferred == r2.preferred;
         }
-        public static bool operator !=(Route r1, Route r2)
-        {
+        public static bool operator !=(Route r1, Route r2) {
             return r1.port != r2.port ||
                 r1.distance != r2.distance ||
                 r1.preferred != r2.preferred;
         }
 
-        public Route(int port, int distance, string preferred)
-        {
+        public Route(int port, int distance, string preferred) {
             this.port = port;
             this.distance = distance;
             this.preferred = preferred;
@@ -46,31 +43,30 @@ namespace NetChangeV2
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        internal Route HandleUnreachablePort(int port)
-        {
+        public void RemovePort(int port) {
             var info = this[port];
-            Remove(port);// TODO does not work, since we remove while we are iterating over this collection
+            lock(this) Remove(port);
 
             // Domjudge - Als het process op poort targetPort door een netwerkpartitie onbereikbaar is geworden:
             Console.WriteLine("Onbereikbaar: " + port);
-
-            return info;
         }
 
-        internal void removeOrAlter(Route route) {
+        internal bool removeOrAlter(Route route, int max) {
             var p = route.port;
-            if (route.CanBe(Count)) {
-                HandleUnreachablePort(p);
+            if (route.Removed) {
+                return true;
             } else {
                 this[p] = route;
+                return false;
             }
         }
 
         internal bool TryAlter(Route r) {
             var p = r.port;
-            if (!ContainsKey(p)) Add(r);
-            else if (this[p] != r) this[p] = r;
-            else return false;
+            if (r.Removed) lock (this) RemovePort(r.port);  //removed
+            else if (!ContainsKey(p)) Add(r);               //added
+            else if (this[p] != r) this[p] = r;             //changed
+            else return false;                              //unchanged
             return true;
         }
     }

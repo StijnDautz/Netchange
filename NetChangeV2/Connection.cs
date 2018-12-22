@@ -52,7 +52,7 @@ namespace NetChangeV2 {
                             break;
                         // Disconnect           - D targetPort
                         case 'D':
-                            Program.node.ReceiveDisconnectMessage(new Route(int.Parse(message[2]), int.Parse(message[3]), message[4]));
+                            Program.node.ReceiveDisconnectMessage(int.Parse(message[1]));
                             break;
                         default:
                             Console.WriteLine("Unknown command");
@@ -60,7 +60,9 @@ namespace NetChangeV2 {
                     }
                 }
             } catch {
-                Program.node.RemoveNeighbourConnection(neighbour);
+                if (Program.node.neighbours.ContainsKey(neighbour)) {
+                    Program.node.RemoveNeighbourConnection(neighbour);
+                }
             }
         }
 
@@ -68,7 +70,7 @@ namespace NetChangeV2 {
             lock (table) foreach (Route r in table.Values) SendRoute(r);
         }
         public void StartPolling() => new Thread(new ThreadStart(PollNotifications)).Start();
-        public void CloseConnection() =>  _tcpClient.Close();
+        public void CloseConnection() => _tcpClient.Close();
         private void Write(string message) => _streamWriter.WriteLine(message);
         public void SendMessage(string message) => Write(message);
         public void SendTCPHandShake() => Write("Hello");

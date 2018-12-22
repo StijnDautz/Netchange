@@ -57,10 +57,9 @@ namespace NetChangeV2
                         break;
                     case 'D': //Disconnect
                         var np = int.Parse(input.Split(new char[] { ' ' }, 3)[1]);
-                        if (node.routingtable.ContainsKey(np))
-                            node.neighbours[np].CloseConnection();
-                        else
-                            Console.WriteLine("port " + np + " is niet bekend");
+                        if (node.neighbours.ContainsKey(np)) {
+                            node.Disconnect(np);
+                        } else Console.WriteLine("port " + np + " is niet bekend");
                         break;
                 }
                 Thread.Sleep(100);
