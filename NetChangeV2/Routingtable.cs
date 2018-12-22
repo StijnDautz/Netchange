@@ -65,8 +65,9 @@ namespace NetChangeV2
             var p = r.port;
             if (r.Removed) lock (this) RemovePort(r.port);  //removed
             else if (!ContainsKey(p)) Add(r);               //added
-            else if (this[p] != r) this[p] = r;             //changed
-            else return false;                              //unchanged
+            else if (this[p] != r) {
+                this[p] = r;                                //changed
+                Console.WriteLine("Afstand naar " + r.port + " is nu " + r.distance + " via " + r.preferred);            } else return false;                            //unchanged
             return true;
         }
     }

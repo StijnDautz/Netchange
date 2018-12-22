@@ -20,8 +20,7 @@ namespace NetChangeV2 {
         internal void ReceiveChangeAlert(int np, Route r) {
             var neighbourtable = neighbours[np].routingtable;
 
-            if (r.Removed || (!r.Removed && r.distance > routingtable.Count-1)) {
-                Console.WriteLine("note to remove " + r.port + " from " + np);
+            if (r.Removed || (!r.Removed && r.distance > 20)) {
                 neighbourtable.RemovePort(r.port);
                 if (!routingtable.ContainsKey(r.port)) return; // we already know
             } else neighbourtable.TryAlter(r);
@@ -67,7 +66,7 @@ namespace NetChangeV2 {
             RecomputeBrokenPorts(port.ToString());
 
             route = GetFastestRoute(port);
-            if (route.Removed || (!route.Removed && route.distance > routingtable.Count)) {
+            if (route.Removed || route.distance > 20) {
                 routingtable.RemovePort(port);
             } else routingtable[port] = route;
             AlertChange(route);
@@ -112,14 +111,13 @@ namespace NetChangeV2 {
 
         /// <summary>Recomputes the fastest route to ports, which route was broken after the preferred neighbour disconnected</summary>
         private void RecomputeBrokenPorts(string np) {
-            Console.WriteLine("Recomputing broken ports");
             lock (routingtable) {
                 //alert alternative routes
                 foreach (Route i in routingtable.Values.Reverse()) {
                     if (i.preferred == np) {
                         // we are sure that every route to i.port that preferred np, is either unreachable or changed
                         var route = GetFastestRoute(i.port);
-                        if (routingtable.removeOrAlter(route, routingtable.Count)) {
+                        if (routingtable.removeOrAlter(route, 20)) {
                             routingtable.RemovePort(i.port);
                             AlertChange(new Route(i.port, 1000, "D"));
                         } else AlertChange(route);
@@ -134,7 +132,7 @@ namespace NetChangeV2 {
 
             lock (neighbours) {
                 foreach (Connection c in neighbours.Values) {
-                    if (tp == c.neighbour) return new Route(tp, 1, tp.ToString());
+                    if (tp == c.neighbour) return new Route(tp, 1, tp.ToString()); //neighbours are always the fastest route
                     else if (c.routingtable.ContainsKey(tp)) {
                         d = c.routingtable[tp].distance;
                         if (closest > d && int.Parse(c.routingtable[tp].preferred) != port) { //cannot target a port through ourselves
